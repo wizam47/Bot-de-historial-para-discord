@@ -5,6 +5,7 @@ require('dotenv').config();
 const { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder } = require('discord.js');
 const admin = require('firebase-admin');
 const serviceAccount = require('./firebase-key.json');
+const express = require('express')
 
 // =============================================
 // Configuración de Firebase
@@ -511,6 +512,20 @@ process.on('unhandledRejection', (error) => {
 
 process.on('uncaughtException', (error) => {
   console.error('Uncaught exception:', error);
+});
+
+// =============================================
+// Configuración para Render
+// =============================================
+const PORT = process.env.PORT || 3000;
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send('Bot de Discord en funcionamiento');
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
 
 // =============================================
