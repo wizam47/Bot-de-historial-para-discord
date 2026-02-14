@@ -417,9 +417,6 @@ client.on('interactionCreate', async (interaction) => {
                          `A continuación se detallan los mensajes enviados cada día:`,
             fields: [],
             timestamp: new Date(),
-            footer: {
-              text: 'Datos proporcionados por Knowledge Bot'
-            }
           };
 
           // Obtener las fechas de las últimas 4 semanas
