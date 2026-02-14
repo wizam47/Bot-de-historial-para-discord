@@ -1,18 +1,34 @@
 // =============================================
 // Configuración inicial y dependencias
 // =============================================
-require('dotenv').config();
+// Solo cargar dotenv en desarrollo
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 const { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder } = require('discord.js');
 const admin = require('firebase-admin');
-const serviceAccount = require('./firebase-key.json');
-const express = require('express')
+const express = require('express');
+
+// Configuración de Firebase usando variables de entorno
+const serviceAccount = process.env.NODE_ENV === 'production' ? {
+  type: process.env.FIREBASE_TYPE,
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : '',
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  client_id: process.env.FIREBASE_CLIENT_ID,
+  auth_uri: process.env.FIREBASE_AUTH_URI,
+  token_uri: process.env.FIREBASE_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL
+} : require('./firebase-key.json');
 
 // =============================================
 // Configuración de Firebase
 // =============================================
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://bot-de-lectura-de-mensajes-default-rtdb.firebaseio.com/'
+  databaseURL: process.env.FIREBASE_DATABASE_URL || 'https://bot-de-lectura-de-mensajes-default-rtdb.firebaseio.com/'
 });
 
 const db = admin.database();
@@ -401,6 +417,9 @@ client.on('interactionCreate', async (interaction) => {
                          `A continuación se detallan los mensajes enviados cada día:`,
             fields: [],
             timestamp: new Date(),
+            footer: {
+              text: 'Datos proporcionados por Knowledge Bot'
+            }
           };
 
           // Obtener las fechas de las últimas 4 semanas
